@@ -119,6 +119,8 @@ h1 { margin: 0; text-wrap: balance; font: 400 clamp(3rem, 15.5vw, 4.4rem)/1.02 v
 }
 @supports (height: 100dvh) { .cam { --avail: calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom)) } }
 @keyframes rise { from { opacity: 0 } }
+#camera { animation: iride .7s cubic-bezier(.16, 1, .3, 1) }
+@keyframes iride { from { clip-path: circle(0 at 50% 88%) } to { clip-path: circle(150% at 50% 88%) } }
 /* The viewfinder takes all the height there is; on a computer it stays a 3:4 portrait. */
 .vf {
   position: relative; flex: 1 1 auto; min-height: 0; width: min(100%, calc(var(--avail) * .75));
@@ -126,6 +128,11 @@ h1 { margin: 0; text-wrap: balance; font: 400 clamp(3rem, 15.5vw, 4.4rem)/1.02 v
 }
 .vf video, .vf canvas, .vf > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block }
 .vf > img { object-fit: contain; background: #0d0507 }
+/* a fresh shot develops like a print: pale and warm first, then its own colours */
+#shot.sviluppa { animation: sviluppa 1.6s cubic-bezier(.3, 0, .2, 1) }
+@keyframes sviluppa { from { filter: sepia(.7) brightness(1.7) contrast(.55) blur(3px); transform: scale(1.04) } 35% { filter: sepia(.45) brightness(1.25) contrast(.8) blur(0) } }
+/* sent: the print flies up into the album */
+.volo { position: fixed; z-index: 35; margin: 0; object-fit: contain; pointer-events: none; border-radius: 4px; box-shadow: 0 18px 40px rgba(0, 0, 0, .5) }
 /* The camera is never shown as a <video>: iPhones draw it small for a moment before resizing it.
    Each frame is painted on #pre instead, which appears once the first one is there. */
 #video { opacity: 0; pointer-events: none }
@@ -169,7 +176,7 @@ h1 { margin: 0; text-wrap: balance; font: 400 clamp(3rem, 15.5vw, 4.4rem)/1.02 v
   padding: 6px 12px; border-radius: 999px; background: rgba(0, 0, 0, .5); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
   font: 500 .8rem/1.2 var(--sys); color: #fff;
 }
-.flash { position: absolute; inset: 0; background: #fff; opacity: 0; pointer-events: none }
+.flash { position: absolute; inset: 0; background: #fff8ec; opacity: 0; pointer-events: none }
 .flash.go { animation: flash .32s ease-out }
 @keyframes flash { from { opacity: .85 } to { opacity: 0 } }
 
@@ -190,10 +197,16 @@ h1 { margin: 0; text-wrap: balance; font: 400 clamp(3rem, 15.5vw, 4.4rem)/1.02 v
 .fx button.on { transform: none }
 .fx button.plain { background: #fff }
 .fx img { display: block; width: 100%; height: 100% }
+/* the shutter ring: a white circle wrapped in the digits of π, which turn slowly and whirl at each shot */
 .ring {
-  position: absolute; left: 50%; top: 6px; width: 80px; height: 80px; margin-left: -40px; pointer-events: none;
-  border-radius: 50%; border: 4.5px solid #fff; box-shadow: 0 1px 10px rgba(0, 0, 0, .3);
+  position: absolute; left: 50%; top: -2px; width: 96px; height: 96px; margin-left: -48px; pointer-events: none; overflow: visible;
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, .55)); animation: gira 60s linear infinite;
 }
+.ring circle { fill: none; stroke: #fff; stroke-width: 4.5 }
+.ring text { font: 700 7.4px/1 var(--lm); fill: var(--rosa-chiaro); letter-spacing: .2px }
+.ring.scatto { animation: gira 60s linear infinite, vortice .9s cubic-bezier(.16, 1, .3, 1) }
+@keyframes gira { to { transform: rotate(360deg) } }
+@keyframes vortice { from { rotate: -270deg } }
 
 .strip { width: 100%; max-width: 520px; margin: 0 auto; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; padding: 6px 18px 14px }
 .thumb {
@@ -224,7 +237,7 @@ h1 { margin: 0; text-wrap: balance; font: 400 clamp(3rem, 15.5vw, 4.4rem)/1.02 v
 .toast.show { opacity: 1; transform: translate(-50%, 0) }
 
 @media (prefers-reduced-motion: reduce) {
-  .cam, .flash.go, .spin { animation: none }
+  .cam, #camera, .flash.go, .spin, .ring, .ring.scatto, #shot.sviluppa { animation: none }
   .toast, .primary, .fx button, #pre { transition: none }
 }
 /* ---------------- l'indice della festa: quiz, caccia, album, come l'indice di una tesi ---------------- */
@@ -398,7 +411,7 @@ h1 { margin: 0; text-wrap: balance; font: 400 clamp(3rem, 15.5vw, 4.4rem)/1.02 v
   display: table; margin: 0 auto 10px; padding: 6px 12px; border-radius: 999px; background: rgba(0, 0, 0, .5); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
   font: 500 .84rem/1.25 var(--sys); color: #fff; text-align: center; max-width: calc(100% - 32px);
 }
-.conto { position: absolute; inset: 0; display: grid; place-items: center; pointer-events: none; font: 200 min(42vw, 11rem)/1 var(--sys); color: #fff; text-shadow: 0 2px 24px rgba(0, 0, 0, .45); font-variant-numeric: tabular-nums }
+.conto { position: absolute; inset: 0; display: grid; place-items: center; pointer-events: none; font: 400 min(48vw, 12rem)/1 var(--lm); color: var(--panna); text-shadow: 0 0 2px var(--bordeaux-scuro), 0 2px 30px rgba(72, 12, 24, .7); font-variant-numeric: lining-nums tabular-nums }
 .conto.batte { animation: batte 1s ease-out }
 @keyframes batte { from { transform: scale(1.35); opacity: 0 } 18% { opacity: 1 } 80% { opacity: 1 } to { transform: scale(.9); opacity: .2 } }
 .dedica-riga {
@@ -500,7 +513,11 @@ h1 { margin: 0; text-wrap: balance; font: 400 clamp(3rem, 15.5vw, 4.4rem)/1.02 v
       <p class="fx-name" id="fxName" aria-live="polite"></p>
       <div class="fx-row">
         <div class="fx" id="fx" aria-label="Effetti"></div>
-        <span class="ring" aria-hidden="true"></span>
+        <svg class="ring" viewBox="0 0 100 100" aria-hidden="true">
+          <defs><path id="giro" d="M50 50m-44 0a44 44 0 1 1 88 0a44 44 0 1 1-88 0"/></defs>
+          <circle cx="50" cy="50" r="38" />
+          <text><textPath href="#giro" textLength="276" lengthAdjust="spacing">3,1415926535 8979323846 2643383279 5028841971 69399</textPath></text>
+        </svg>
       </div>
       <div class="strip">
         <button class="thumb" id="thumb" aria-label="Carica dalla galleria">
@@ -1810,6 +1827,10 @@ async function finish(photo, from) {
   await rendi();
   mostraDedica();
   show('review');
+  const shot = $('shot');
+  shot.classList.remove('sviluppa');
+  void shot.offsetWidth;
+  shot.classList.add('sviluppa');
 }
 
 // the photo as it will be sent: framed with its caption, or bare
@@ -1872,6 +1893,10 @@ function shoot() {
   f.classList.remove('go');
   void f.offsetWidth;
   f.classList.add('go');
+  const ring = document.querySelector('.ring');
+  ring.classList.remove('scatto');
+  void ring.offsetWidth;
+  ring.classList.add('scatto');
   const out = compose(video, video.videoWidth, video.videoHeight, facing === 'user', vf.clientWidth / vf.clientHeight);
   out.getContext('2d').drawImage(fun, 0, 0, out.width, out.height); // confetti in the air stay in the photo
   finish(out, 'camera');
@@ -1919,6 +1944,20 @@ function leaveReview() {
     show(current.sfida ? 'caccia' : 'home');
     sfida = null;
   }
+}
+
+function vola(url, r) {
+  if (!r.width || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const img = document.createElement('img');
+  img.src = url;
+  img.className = 'volo';
+  Object.assign(img.style, { left: r.left + 'px', top: r.top + 'px', width: r.width + 'px', height: r.height + 'px' });
+  document.body.append(img);
+  img.animate([
+    { transform: 'none', opacity: 1 },
+    { transform: 'translateY(-4%) scale(.62) rotate(-4deg)', opacity: 1, offset: .35 },
+    { transform: `translateY(${-r.top - r.height * .6}px) scale(.18) rotate(-12deg)`, opacity: 0 }
+  ], { duration: 900, easing: 'cubic-bezier(.5, 0, .3, 1)' }).onfinish = () => img.remove();
 }
 
 function celebrate() {
@@ -1997,6 +2036,7 @@ async function send() {
     const firma = c.dedica ? c.firma : ''; // a name goes with the photo only when the guest signs a dedication
     const esito = await invia(c.blob, { tag: 'laurea', ctx: { dedica: c.dedica, firma, sfida: c.sfida && c.sfida.t } });
     c.inviata = true;
+    vola(c.url, $('shot').getBoundingClientRect());
     figura++;
     try { localStorage.setItem('figura', figura); } catch (e) {}
     cornice();
