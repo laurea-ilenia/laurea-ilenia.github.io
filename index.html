@@ -90,6 +90,19 @@ h1 { margin: 0; text-wrap: balance; font: 400 clamp(3rem, 15.5vw, 4.4rem)/1.02 v
   align-self: center; min-height: 44px; padding: 0 12px; border: 0; background: none; cursor: pointer; font-style: italic; color: var(--bordeaux-scuro);
   text-decoration: underline; text-decoration-color: var(--filo); text-decoration-thickness: 1px; text-underline-offset: 5px;
 }
+/* the page of the party opens on the camera with the effects: the faces it can wear, then the games */
+.effetti {
+  display: flex; align-items: center; gap: 14px; min-height: 76px; padding: 10px 16px 10px 12px; border: 1px solid var(--rosa); border-radius: 3px; cursor: pointer;
+  background: rgba(255, 253, 246, .72); color: var(--bordeaux-scuro); text-align: left; box-shadow: 0 8px 20px rgba(72, 12, 24, .12); transition: transform .12s;
+}
+.effetti:active { transform: scale(.985) }
+.facce { display: flex; flex: none }
+.facce img { width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--panna); background: var(--panna); box-shadow: 0 2px 6px rgba(72, 12, 24, .2) }
+.facce img + img { margin-left: -14px }
+.effetti-testo { display: flex; flex-direction: column; gap: 4px; min-width: 0 }
+.effetti-testo span { font: 400 1.25rem/1.1 var(--lm) }
+.effetti-testo small { font: italic 400 .9rem/1.2 var(--lm); color: var(--bordeaux) }
+@media (prefers-reduced-motion: reduce) { .effetti { transition: none } }
 .home-msg { margin: 0; font-size: .92rem; color: var(--avviso) }
 /* the date sits under a short rose rule, as on the printed card */
 .data { margin: 4px 0 0; padding-top: 7px; font-size: .9rem; color: var(--bordeaux); font-variant-numeric: lining-nums; background: linear-gradient(var(--rosa), var(--rosa)) top center / 92px 1px no-repeat }
@@ -124,7 +137,8 @@ h1 { margin: 0; text-wrap: balance; font: 400 clamp(3rem, 15.5vw, 4.4rem)/1.02 v
 .inizio { position: absolute; z-index: 3; top: max(8px, env(safe-area-inset-top)); left: 6px; display: flex; align-items: center; gap: 2px; min-height: 44px; padding: 0 12px 0 4px; border: 0; border-radius: 999px; background: rgba(251, 246, 236, .82); cursor: pointer; font: italic 400 1rem/1 var(--lm); color: var(--bordeaux-scuro) }
 .inizio svg { width: 22px; height: 22px }
 .porta .primary:disabled { filter: saturate(.6) brightness(1.15) }
-.porta-nota { margin: -4px auto 10px; color: var(--bordeaux); font-style: italic }
+.porta .textbtn { margin: -8px auto -6px; width: auto }
+.porta-nota { margin: 0 auto 10px; color: var(--bordeaux); font-style: italic }
 .porta .secondo { min-height: 76px; border: 1px solid var(--rosa); border-radius: 3px; background: rgba(255, 253, 246, .45); color: var(--bordeaux-scuro); font: 400 1.2rem/1.25 var(--lm); cursor: pointer }
 ::selection { background: var(--rosa-chiaro); color: var(--bordeaux-scuro) }
 
@@ -481,10 +495,12 @@ h1 { margin: 0; text-wrap: balance; font: 400 clamp(3rem, 15.5vw, 4.4rem)/1.02 v
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8.5A2.5 2.5 0 0 1 5.5 6h1.8l1.6-2h6.2l1.6 2h1.8A2.5 2.5 0 0 1 21 8.5v9a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 17.5z"/><circle cx="12" cy="12.8" r="3.8"/></svg>
     <span>Scatta una foto</span>
   </button>
+  <button class="textbtn" id="portaGalleria">oppure scegline una dalla galleria</button>
   <p class="porta-nota">La foto va dritta nell'album della festa.</p>
   <button class="secondo" id="entra"></button>
   <p class="data porta-data" id="portaData"></p>
   <input type="file" id="scattaFile" accept="image/*" capture="environment" hidden>
+  <input type="file" id="portaFile" accept="image/*" hidden>
 </div>
 
 <main class="home" id="home">
@@ -498,13 +514,11 @@ h1 { margin: 0; text-wrap: balance; font: 400 clamp(3rem, 15.5vw, 4.4rem)/1.02 v
     <figure class="seal" id="seal" aria-hidden="true">
       <img src="effetti/hero.png" width="840" height="840" alt="" draggable="false">
     </figure>
-    <p class="lede quiet">Scatta una foto: finisce nell'album della festa.</p>
     <div class="actions">
-      <button class="primary" id="openCam">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8.5A2.5 2.5 0 0 1 5.5 6h1.8l1.6-2h6.2l1.6 2h1.8A2.5 2.5 0 0 1 21 8.5v9a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 17.5z"/><circle cx="12" cy="12.8" r="3.8"/></svg>
-        Apri la fotocamera
+      <button class="effetti" id="openCam">
+        <span class="facce" aria-hidden="true"><img src="effetti/fx-alloro.png" alt=""><img src="effetti/fx-tocco.png" alt=""><img src="effetti/fx-occhiali.png" alt=""><img src="effetti/fx-pergamena.png" alt=""></span>
+        <span class="effetti-testo"><span>Foto con gli effetti</span><small>alloro, tocco, occhiali π…</small></span>
       </button>
-      <button class="textbtn quiet" id="homeGallery">oppure carica una foto dalla galleria</button>
       <p class="home-msg" id="homeMsg" role="status"></p>
       <nav class="indice quiet" aria-label="Giochi e album della festa">
         <button class="voce js-apri" data-schermo="quiz"><span>Il quiz della laurea</span><i></i><b class="js-stato-quiz"></b></button>
@@ -1767,7 +1781,7 @@ async function openCamera() {
     camBloccata = true;
     closeCamera();
     homeMsg(location.protocol === 'https:' || location.hostname === 'localhost'
-      ? 'La fotocamera è bloccata. Consenti l\'accesso nelle impostazioni del browser, oppure carica una foto dalla galleria.'
+      ? 'La fotocamera è bloccata. Consenti l\'accesso nelle impostazioni del browser, oppure tocca di nuovo: sceglierai una foto dalla galleria.'
       : 'La fotocamera funziona solo su un indirizzo https.');
     if (daCaccia) toast('La fotocamera è bloccata. Consenti l\'accesso nelle impostazioni del browser, oppure tocca di nuovo la voce: sceglierai la foto dalla galleria.', 6500);
     return;
@@ -2165,9 +2179,10 @@ addEventListener('popstate', () => { if (screen === 'home' && $('porta').hidden 
   $('portaData').textContent = 'Festa di laurea, ' + CONFIG.data;
 }
 $('scatta').onclick = () => $('scattaFile').click();
-$('scattaFile').onchange = async () => {
-  const f = $('scattaFile').files[0], btn = $('scatta'), label = btn.querySelector('span');
-  $('scattaFile').value = '';
+$('portaGalleria').onclick = () => $('portaFile').click();
+$('scattaFile').onchange = $('portaFile').onchange = async e => {
+  const f = e.target.files[0], btn = $('scatta'), label = btn.querySelector('span');
+  e.target.value = '';
   if (!f) return;
   btn.disabled = true;
   label.textContent = 'Invio…';
@@ -2196,8 +2211,7 @@ $('scattaFile').onchange = async () => {
 
 // ---------------------------------------------------------------- wiring
 
-$('openCam').onclick = () => { sfida = null; openCamera(); };
-$('homeGallery').onclick = () => { sfida = null; $('picker').click(); };
+$('openCam').onclick = () => { sfida = null; if (camBloccata) $('picker').click(); else openCamera(); };
 $('thumb').onclick = () => $('picker').click();
 $('picker').onchange = () => { const f = $('picker').files[0]; $('picker').value = ''; if (f) fromFile(f); };
 $('camClose').onclick = closeCamera;
