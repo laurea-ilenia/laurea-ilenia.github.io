@@ -61,7 +61,7 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--bordeaux); outl
 .benvenuti { display: block; margin-bottom: 2px; font: italic 400 1.0625rem/1.5 var(--lm); letter-spacing: 0; color: var(--bordeaux) }
 h1 { margin: 0; text-wrap: balance; font: 400 clamp(3rem, 15.5vw, 4.4rem)/1.02 var(--lm); letter-spacing: -.012em; color: var(--bordeaux-scuro) }
 /* her name catches the light once π is written: a band of rose sweeps across the bordeaux */
-#nome.brilla {
+.brilla {
   background: linear-gradient(100deg, var(--bordeaux-scuro) 40%, #a8485a 46%, var(--rosa-chiaro) 50%, #a8485a 54%, var(--bordeaux-scuro) 60%) 100% 0 / 300% 100%;
   -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; animation: brilla 1.8s cubic-bezier(.4, 0, .2, 1) forwards;
 }
@@ -112,7 +112,7 @@ h1 { margin: 0; text-wrap: balance; font: 400 clamp(3rem, 15.5vw, 4.4rem)/1.02 v
 }
 @keyframes lamina { from { background-position: 100% 0 } to { background-position: 0 0 } }
 
-@media (prefers-reduced-motion: reduce) { .lamina, #nome.brilla { animation: none } }
+@media (prefers-reduced-motion: reduce) { .lamina, .brilla { animation: none } }
 
 /* ---------------- camera & review: Instagram-style ---------------- */
 .cam {
@@ -1058,13 +1058,14 @@ const PETALO = window.confetti && forma(confetti.shapeFromPath, { path: 'M5 0C9.
 const PIGRECO = window.confetti && forma(confetti.shapeFromText, { text: 'π', scalar: 2.2, color: '#c98d8f' });
 function lancio() {
   if (!window.confetti || calm.matches || !TOCCO) return;
-  const base = { particleCount: 26, spread: 55, startVelocity: 78, ticks: 360, gravity: 1, scalar: 3.6, zIndex: 3, shapes: [TOCCO, TOCCO, TOCCO, PIGRECO].filter(Boolean), colors: ['#480c18', '#6b1626', '#480c18'] };
+  const base = { zIndex: $('porta').hidden ? 3 : 30, particleCount: 26, spread: 55, startVelocity: 78, ticks: 360, gravity: 1, scalar: 3.6, shapes: [TOCCO, TOCCO, TOCCO, PIGRECO].filter(Boolean), colors: ['#480c18', '#6b1626', '#480c18'] };
   confetti({ ...base, angle: 62, origin: { x: -.05, y: 1.05 } });
   confetti({ ...base, angle: 118, origin: { x: 1.05, y: 1.05 } });
 }
 setInterval(() => {
-  if (screen !== 'home' || document.hidden || calm.matches || !PETALO || !window.confetti) return;
-  confetti({ particleCount: 1, startVelocity: 0, ticks: 700, gravity: .22, drift: (Math.random() - .5) * 1.2, scalar: 1.5 + Math.random(), zIndex: 3,
+  const porta = !$('porta').hidden;
+  if ((screen !== 'home' && !porta) || document.hidden || calm.matches || !PETALO || !window.confetti) return;
+  confetti({ particleCount: 1, startVelocity: 0, ticks: 700, gravity: .22, drift: (Math.random() - .5) * 1.2, scalar: 1.5 + Math.random(), zIndex: porta ? 30 : 3,
     origin: { x: Math.random(), y: -.04 }, shapes: [PETALO], colors: ['#c98d8f', '#e2b7b4', '#a8485a'] });
 }, 650);
 // π is written: a wave of light runs out from the wreath across the whole wall, the wreath gives a
@@ -1077,7 +1078,9 @@ function fanfara() {
   pi.sheen = t - t0; // and the light crosses π too
   piBusy = true;
   lancio();
-  const n = $('nome');
+  brilla($('nome'));
+}
+function brilla(n) {
   n.classList.remove('brilla');
   void n.offsetWidth;
   n.classList.add('brilla');
@@ -2118,6 +2121,10 @@ async function send() {
 
 // ---- la porta: la fotocamera del telefono e la foto subito nell'album, senza effetti né anteprima
 $('portaNome').textContent = CONFIG.nome;
+// the first screen celebrates too: caps tossed and her name catching the light, again at each tap on it
+const festaPorta = () => { lancio(); brilla($('portaNome')); };
+$('portaNome').onclick = festaPorta;
+if (!$('porta').hidden) setTimeout(festaPorta, 600);
 $('entra').textContent = `Entra nella pagina di ${CONFIG.nome}`;
 $('entra').onclick = () => { $('porta').hidden = true; show('home'); };
 $('scatta').onclick = () => $('scattaFile').click();
