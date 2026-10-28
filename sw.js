@@ -1,6 +1,6 @@
 // Tiene la pagina e gli effetti sul telefono dell'ospite: se alla festa la rete è debole o cade,
 // la pagina si apre lo stesso e la fotocamera con gli effetti funziona.
-const C = 'laurea-v4';
+const C = 'laurea-v5';
 const BASE = ['./', 'effetti/LM-regular.woff2', 'effetti/LM-italic.woff2', 'effetti/LM-bold.woff2', 'effetti/hero.png',
   'effetti/effetti.glb', 'effetti/befana.png', 'effetti/volto.json', 'effetti/fx-alloro.png', 'effetti/fx-oro.png', 'effetti/fx-tocco.png', 'effetti/fx-befana.png',
   'effetti/occhiali_pergamena.glb', 'effetti/fx-occhiali.png', 'effetti/fx-pergamena.png', 'effetti/qr.png'];

@@ -9,7 +9,7 @@
 /* Lo stile del cartoncino col QR: carta panna, inchiostro bordeaux, il π in rosa antico.
    La home è una tavola stampata delle cifre di π, a gruppi di dieci, in Latin Modern (il carattere
    di LaTeX, quello di ogni tesi d'ingegneria), come i puntini del QR sul cartoncino. Le cifre volano
-   nella corona d'alloro e scrivono π. Ogni foto esce come una figura della tesi.
+   nella corona d'alloro e scrivono π. Ogni foto esce incorniciata col suo nome.
    La fotocamera invece è quella di Instagram: anteprima a tutto schermo, effetti in cerchio. */
 /* self-hosted: on the party's weak 4G a slow CDN would show Georgia, and bake it into the canvas digits */
 @font-face { font-family: 'Latin Modern'; src: url(effetti/LM-regular.woff2) format('woff2'); font-display: swap }
@@ -816,9 +816,6 @@ if (new URLSearchParams(location.search).has('azzera')) {
 const ospite = memo.get('ospite', '') || Math.random().toString(36).slice(2, 10);
 memo.set('ospite', ospite);
 
-// Each photo is a figure of the thesis: "Figura 1", "Figura 2"… counted per phone.
-let figura = 0;
-try { figura = +localStorage.getItem('figura') || 0; } catch (e) {}
 
 // ---------------------------------------------------------------- the wall of π
 // The home is a printed table of π: its real digits, in groups of ten like the old tables, fill
@@ -1632,7 +1629,7 @@ function frame(photo, info = {}) {
 
   c.textBaseline = 'alphabetic';
   c.textAlign = 'left';
-  const label = `Figura ${figura + 1}: la laurea di `, max = w;
+  const label = 'La laurea di ', max = w;
   let size = u * 4.6, wl, wn;
   do {
     c.font = `${size}px ${LM}`; wl = c.measureText(label).width;
@@ -2131,9 +2128,6 @@ async function send() {
     const esito = await invia(c.blob, { tag: 'laurea', ctx: { dedica: c.dedica, firma, sfida: c.sfida && c.sfida.t } });
     c.inviata = true;
     vola(c.url, $('shot').getBoundingClientRect());
-    figura++;
-    try { localStorage.setItem('figura', figura); } catch (e) {}
-    cornice();
     if (esito === 'prova') {
       const img = $('shot');
       provaFoto.unshift({ url: c.url, width: img.naturalWidth, height: img.naturalHeight, context: { custom: { dedica: c.dedica, firma, sfida: c.sfida && c.sfida.t } } });
@@ -2142,7 +2136,7 @@ async function send() {
     thumb.style.backgroundImage = `url("${c.url}")`;
     thumb.classList.add('has');
     let msg = esito === 'in coda' ? 'Niente rete: la foto è salvata e partirà da sola appena torna la connessione'
-      : esito === 'inviata' ? `Figura ${figura} aggiunta all'album` : 'Modalità prova: la foto resta su questo telefono';
+      : esito === 'inviata' ? 'Foto aggiunta all\'album' : 'Modalità prova: la foto resta su questo telefono';
     if (c.sfida) {
       const fatte = memo.get('caccia', {}), prima = contaCaccia(fatte);
       fatte[c.sfida.t] = miniatura(c.raw);
@@ -2155,7 +2149,7 @@ async function send() {
       sfida = null;
       show('caccia');
       disegnaCaccia(c.sfida.t);
-      if (n === SFIDE.length && prima < n) msg = 'Caccia completata: ogni figura ha la sua foto.';
+      if (n === SFIDE.length && prima < n) msg = 'Caccia completata: hai fatto tutti gli scatti.';
     } else {
       leaveReview();
     }
@@ -2239,7 +2233,7 @@ function cornice() {
   $('frameLabel').textContent = frameOn ? 'Cornice: sì' : 'Cornice: no';
   $('carta').hidden = !frameOn;
   $('vf').classList.toggle('incorniciata', frameOn);
-  $('cartaTesto').innerHTML = `Figura ${figura + 1}: la laurea di <i></i>`;
+  $('cartaTesto').innerHTML = 'La laurea di <i></i>';
   $('cartaTesto').lastChild.textContent = CONFIG.nome;
 }
 cornice();
@@ -2448,7 +2442,7 @@ function disegnaCaccia(nuova) {
     ol.append(li);
   }
   $('cBarra').textContent = `${n} di ${SFIDE.length}`;
-  $('cStato').textContent = n === SFIDE.length ? 'Caccia completata: ogni figura ha la sua foto.' : '';
+  $('cStato').textContent = n === SFIDE.length ? 'Caccia completata: hai fatto tutti gli scatti.' : '';
 }
 // a small square of the photo, kept on the phone for the list
 function miniatura(src) {
