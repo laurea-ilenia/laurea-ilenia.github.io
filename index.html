@@ -1050,6 +1050,23 @@ function paintSway() {
 }
 
 let piBusy = true, squillo = false;
+// The graduates' cap toss: bordeaux caps (and a few π) fly up from both bottom corners and tumble
+// down over the page. Then rose petals keep falling, one at a time, while the home is open.
+const forma = (f, a) => { try { return f(a); } catch (e) { return null; } }; // older browsers: no custom shapes
+const TOCCO = window.confetti && forma(confetti.shapeFromPath, { path: 'M10 1L20 5.5 10 10 0 5.5zM4.5 8v4.5c0 2 11 2 11 0V8L10 10.6z' });
+const PETALO = window.confetti && forma(confetti.shapeFromPath, { path: 'M5 0C9.5 3 9.5 9.5 5 13 .5 9.5.5 3 5 0z' });
+const PIGRECO = window.confetti && forma(confetti.shapeFromText, { text: 'π', scalar: 2.2, color: '#c98d8f' });
+function lancio() {
+  if (!window.confetti || calm.matches || !TOCCO) return;
+  const base = { particleCount: 26, spread: 55, startVelocity: 78, ticks: 360, gravity: 1, scalar: 3.6, zIndex: 3, shapes: [TOCCO, TOCCO, TOCCO, PIGRECO].filter(Boolean), colors: ['#480c18', '#6b1626', '#480c18'] };
+  confetti({ ...base, angle: 62, origin: { x: -.05, y: 1.05 } });
+  confetti({ ...base, angle: 118, origin: { x: 1.05, y: 1.05 } });
+}
+setInterval(() => {
+  if (screen !== 'home' || document.hidden || calm.matches || !PETALO || !window.confetti) return;
+  confetti({ particleCount: 1, startVelocity: 0, ticks: 700, gravity: .22, drift: (Math.random() - .5) * 1.2, scalar: 1.5 + Math.random(), zIndex: 3,
+    origin: { x: Math.random(), y: -.04 }, shapes: [PETALO], colors: ['#c98d8f', '#e2b7b4', '#a8485a'] });
+}, 650);
 // π is written: a wave of light runs out from the wreath across the whole wall, the wreath gives a
 // little hop and a sheen of rose crosses her name. Once, at the end of the intro.
 function fanfara() {
@@ -1059,6 +1076,7 @@ function fanfara() {
   sway.vs += .022;
   pi.sheen = t - t0; // and the light crosses π too
   piBusy = true;
+  lancio();
   const n = $('nome');
   n.classList.remove('brilla');
   void n.offsetWidth;
@@ -1143,6 +1161,8 @@ home.addEventListener('pointerup', e => {
       p.vx -= (p.y - pi.cy) * w;
       p.vy += (p.x - pi.cx) * w;
     }
+  } else if ((r => q.y < r.bottom && q.y > r.top - 30)($('nome').getBoundingClientRect())) {
+    lancio(); // a tap on her name: the caps fly again
   } else {
     wall.rings.push({ x: e.clientX, y: e.clientY, t: performance.now() });
   }
